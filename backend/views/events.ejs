@@ -1,0 +1,150 @@
+<%- include('partials/header') %>
+
+<!-- Page Header -->
+<section class="bg-light py-4">
+    <div class="container">
+        <h1 class="mb-3">Events</h1>
+        <p class="text-muted">Discover and explore amazing events, workshops, and opportunities.</p>
+    </div>
+</section>
+
+<!-- Search and Filters -->
+<section class="py-4 border-bottom">
+    <div class="container">
+        <form method="GET" action="/events" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search events..." 
+                       value="<%= filters.search || '' %>">
+            </div>
+            <div class="col-md-2">
+                <select name="type" class="form-select">
+                    <option value="all">All Types</option>
+                    <option value="hackathon" <%= filters.type === 'hackathon' ? 'selected' : '' %>>Hackathon</option>
+                    <option value="internship" <%= filters.type === 'internship' ? 'selected' : '' %>>Internship</option>
+                    <option value="fest" <%= filters.type === 'fest' ? 'selected' : '' %>>Tech Fest</option>
+                    <option value="workshop" <%= filters.type === 'workshop' ? 'selected' : '' %>>Workshop</option>
+                    <option value="competition" <%= filters.type === 'competition' ? 'selected' : '' %>>Competition</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="mode" class="form-select">
+                    <option value="all">All Modes</option>
+                    <option value="online" <%= filters.mode === 'online' ? 'selected' : '' %>>Online</option>
+                    <option value="offline" <%= filters.mode === 'offline' ? 'selected' : '' %>>Offline</option>
+                    <option value="hybrid" <%= filters.mode === 'hybrid' ? 'selected' : '' %>>Hybrid</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="sortBy" class="form-select">
+                    <option value="createdAt" <%= filters.sortBy === 'createdAt' ? 'selected' : '' %>>Latest</option>
+                    <option value="date" <%= filters.sortBy === 'date' ? 'selected' : '' %>>Date</option>
+                    <option value="title" <%= filters.sortBy === 'title' ? 'selected' : '' %>>Title</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Events Grid -->
+<section class="py-5">
+    <div class="container">
+        <!-- Results Info -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <p class="text-muted mb-0">
+                Showing <%= events.length %> of <%= total %> events
+            </p>
+            <% if (user) { %>
+                <a href="/add-event" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Add Event
+                </a>
+            <% } %>
+        </div>
+
+        <!-- Events -->
+        <% if (events && events.length > 0) { %>
+            <div class="row g-4">
+                <% events.forEach(event => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="<%= event.image %>" class="card-img-top" alt="<%= event.title %>" 
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= event.title %></h5>
+                                <p class="card-text text-muted"><%= event.description.substring(0, 120) %>...</p>
+                                
+                                <div class="mb-3">
+                                    <span class="badge bg-primary me-2"><%= event.type %></span>
+                                    <span class="badge bg-secondary"><%= event.mode %></span>
+                                </div>
+                                
+                                <div class="row text-muted small mb-3">
+                                    <div class="col-6">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <%= event.date %>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <%= event.location %>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i>
+                                        <%= event.participants %> participants
+                                    </small>
+                                    <span class="badge bg-success"><%= event.prize %></span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="/events/<%= event._id %>" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <% if (user && (user._id.toString() === event.createdBy._id.toString() || user.role === 'admin')) { %>
+                                    <a href="/edit-event/<%= event._id %>" class="btn btn-outline-secondary btn-sm ms-2">Edit</a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/events?page=<%= currentPage - 1 %>&type=<%= filters.type %>&mode=<%= filters.mode %>&search=<%= filters.search %>&sortBy=<%= filters.sortBy %>">Previous</a>
+                            </li>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="/events?page=<%= i %>&type=<%= filters.type %>&mode=<%= filters.mode %>&search=<%= filters.search %>&sortBy=<%= filters.sortBy %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                        
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/events?page=<%= currentPage + 1 %>&type=<%= filters.type %>&mode=<%= filters.mode %>&search=<%= filters.search %>&sortBy=<%= filters.sortBy %>">Next</a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
+        <% } else { %>
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4>No events found</h4>
+                <p class="text-muted">Try adjusting your search criteria or check back later.</p>
+                <% if (user) { %>
+                    <a href="/add-event" class="btn btn-primary">Add Your First Event</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %> 

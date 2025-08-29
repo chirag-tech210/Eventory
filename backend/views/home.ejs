@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Discover Amazing Events</h1>
+                <p class="lead mb-4">Find and participate in the best hackathons, workshops, internships, and tech events. Connect with like-minded people and grow your skills.</p>
+                <a href="/events" class="btn btn-light btn-lg">Explore Events</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80" 
+                     alt="Events" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Events -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Events</h2>
+        
+        <% if (events && events.length > 0) { %>
+            <div class="row g-4">
+                <% events.forEach(event => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="<%= event.image %>" class="card-img-top" alt="<%= event.title %>" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= event.title %></h5>
+                                <p class="card-text text-muted"><%= event.description.substring(0, 100) %>...</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary"><%= event.type %></span>
+                                    <small class="text-muted"><%= event.date %></small>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="/events/<%= event._id %>" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="text-center mt-4">
+                <a href="/events" class="btn btn-primary">View All Events</a>
+            </div>
+        <% } else { %>
+            <div class="text-center">
+                <p class="text-muted">No events available at the moment.</p>
+                <% if (user) { %>
+                    <a href="/add-event" class="btn btn-primary">Add Your First Event</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Event Portal?</h2>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h4>Easy Discovery</h4>
+                <p class="text-muted">Find events that match your interests and skills with our advanced search and filtering.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h4>Community</h4>
+                <p class="text-muted">Connect with like-minded people and build your professional network.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="fas fa-certificate fa-3x text-primary mb-3"></i>
+                <h4>Growth</h4>
+                <p class="text-muted">Participate in events that help you learn new skills and advance your career.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %> 
